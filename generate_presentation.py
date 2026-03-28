@@ -102,9 +102,10 @@ team = [
 for member in team:
     add_bullet(tf_team, f" {member}", 22)
 
-
-p_sub = tf_team.add_paragraph()
-p_sub.text = "\n\nSubmitted to: Ms. Gayathri"
+# FIX: Added a dedicated, un-bulleted text box for the faculty submission
+txBox = slide_team.shapes.add_textbox(Inches(1), Inches(5.5), Inches(8), Inches(1))
+p_sub = txBox.text_frame.paragraphs[0]
+p_sub.text = "Submitted to: Ms. Gayathri"
 p_sub.font.size = Pt(25)
 p_sub.font.italic = True
 p_sub.font.bold = True
