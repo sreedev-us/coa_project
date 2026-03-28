@@ -83,23 +83,13 @@ title = slide_title.shapes.title
 subtitle = slide_title.placeholders[1]
 
 title.text = "Control Hazard Analysis & Hardware Branch Prediction"
+subtitle.text = "Providence College of Engineering\nKTU S4 COA"
 
-# Take manual control of the subtitle text frame
-tf = subtitle.text_frame
-tf.clear() # Clears the default messy string formatting
-
-# 1. College & Course Header
-p_header = tf.paragraphs[0]
-p_header.text = "Providence College of Engineering | KTU S4 COA"
-p_header.font.size = Pt(22)
-p_header.font.bold = True
-p_header.space_after = Pt(25) # Adds a clean gap before the team members
-
-# 2. Team Members Section
-p_team_title = tf.add_paragraph()
-p_team_title.text = "Team Members:"
-p_team_title.font.size = Pt(18)
-p_team_title.font.bold = True
+# --- Slide 2: Team & Submission Details ---
+slide_team = prs.slides.add_slide(prs.slide_layouts[1])
+slide_team.shapes.title.text = "Project Team"
+tf_team = slide_team.shapes.placeholders[1].text_frame
+tf_team.text = "Team Members:"
 
 team = [
     "Agnivesh P A (PRC24CA010)", 
@@ -110,17 +100,15 @@ team = [
 ]
 
 for member in team:
-    p_mem = tf.add_paragraph()
-    p_mem.text = member
-    p_mem.font.size = Pt(16)
+    add_bullet(tf_team, f"• {member}", 22)
 
-# 3. Faculty Submission Section
-p_sub = tf.add_paragraph()
+p_sub = tf_team.add_paragraph()
 p_sub.text = "\nSubmitted to: Ms. Gayathri"
-p_sub.font.size = Pt(18)
+p_sub.font.size = Pt(22)
 p_sub.font.italic = True
+p_sub.font.bold = True
 
-# --- Slide 2: Methodology ---
+# --- Slide 3: Methodology ---
 slide_intro = prs.slides.add_slide(prs.slide_layouts[1])
 slide_intro.shapes.title.text = "Methodology & Workloads"
 tf_intro = slide_intro.shapes.placeholders[1].text_frame
@@ -130,7 +118,7 @@ add_bullet(tf_intro, "1. Random Workload: Unpredictable branches (rand() % 100 <
 add_bullet(tf_intro, "2. Patterned Workload: A predictable mathematical loop (i % 4 != 0).", 20)
 add_bullet(tf_intro, "Goal: Observe how advanced hardware 'learns' software patterns to avoid pipeline flushes.", 22, True)
 
-# --- Slide 3: Random Workload Data ---
+# --- Slide 4: Random Workload Data ---
 slide_rand = prs.slides.add_slide(prs.slide_layouts[1])
 slide_rand.shapes.title.text = "Phase 1: Random Workload Execution"
 tf_rand = slide_rand.shapes.placeholders[1].text_frame
@@ -138,12 +126,12 @@ tf_rand.text = "Hypothesis: Predictors cannot find a pattern in random data. Mis
 for pred in predictors:
     add_bullet(tf_rand, f"• {pred}: {results['Random'][pred]['incorrect']:,} Mispredictions | {results['Random'][pred]['squashes']:,} Flushes", 22)
 
-# --- Slide 4: Random Workload Graph ---
+# --- Slide 5: Random Workload Graph ---
 slide_rg = prs.slides.add_slide(prs.slide_layouts[5])
 slide_rg.shapes.title.text = "Visualizing the Random Workload"
 slide_rg.shapes.add_picture("s4_project_tests/graph_random.png", Inches(1), Inches(1.5), width=Inches(8))
 
-# --- Slide 5: Patterned Workload Data ---
+# --- Slide 6: Patterned Workload Data ---
 slide_pat = prs.slides.add_slide(prs.slide_layouts[1])
 slide_pat.shapes.title.text = "Phase 2: Patterned Workload Execution"
 tf_pat = slide_pat.shapes.placeholders[1].text_frame
@@ -151,12 +139,12 @@ tf_pat.text = "Hypothesis: Advanced predictors will 'learn' the repeating mathem
 for pred in predictors:
     add_bullet(tf_pat, f"• {pred}: {results['Patterned'][pred]['incorrect']:,} Mispredictions | {results['Patterned'][pred]['squashes']:,} Flushes", 22)
 
-# --- Slide 6: Patterned Workload Graph ---
+# --- Slide 7: Patterned Workload Graph ---
 slide_pg = prs.slides.add_slide(prs.slide_layouts[5])
 slide_pg.shapes.title.text = "Visualizing the Patterned Workload"
 slide_pg.shapes.add_picture("s4_project_tests/graph_patterned.png", Inches(1), Inches(1.5), width=Inches(8))
 
-# --- Slide 7: Time Saved (Raw Data) ---
+# --- Slide 8: Time Saved (Raw Data) ---
 slide_time = prs.slides.add_slide(prs.slide_layouts[1])
 slide_time.shapes.title.text = "Measuring Performance: CPU Clock Cycles"
 tf_time = slide_time.shapes.placeholders[1].text_frame
@@ -170,7 +158,7 @@ best_ticks = min(results['Patterned'][p]['ticks'] for p in predictors)
 saved_ticks = worst_ticks - best_ticks
 percent_saved = (saved_ticks / worst_ticks) * 100
 
-# --- Slide 8: The Real-World Impact ---
+# --- Slide 9: The Real-World Impact ---
 slide_impact = prs.slides.add_slide(prs.slide_layouts[1])
 slide_impact.shapes.title.text = "The Real-World Impact"
 tf_impact = slide_impact.shapes.placeholders[1].text_frame
@@ -180,7 +168,7 @@ add_bullet(tf_impact, f"By minimizing pipeline bubbles, the optimal predictor sa
 add_bullet(tf_impact, f"This represents a {percent_saved:.2f}% reduction in total execution time.", 24, True)
 add_bullet(tf_impact, "In massive data centers or high-performance environments, a ~3.5% speedup across billions of instructions saves significant processing time and power, simply by choosing the correct hardware architecture!", 22)
 
-# --- Slide 9: AI/Perceptron Explanation ---
+# --- Slide 10: AI/Perceptron Explanation ---
 slide_ml = prs.slides.add_slide(prs.slide_layouts[1])
 slide_ml.shapes.title.text = "The AI Paradox: Why the Perceptron Failed"
 tf_ml = slide_ml.shapes.placeholders[1].text_frame
@@ -193,4 +181,4 @@ add_bullet(tf_ml, "Conclusion: Throwing AI hardware at simple code is highly ine
 # 5. Save the file
 ppt_path = "s4_project_tests/KTU_S4_Project_Report.pptx"
 prs.save(ppt_path)
-print(f"🎉 Success! 9-Slide formatted presentation saved to {ppt_path}")
+print(f"🎉 Success! 10-Slide formatted presentation saved to {ppt_path}")
