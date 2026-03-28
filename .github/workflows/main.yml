@@ -16,8 +16,10 @@ jobs:
           lfs: true
 
       - name: Install gem5 Hardware Dependencies
-        # This installs the C++ libraries gem5 needs to boot up
-        run: sudo apt-get update && sudo apt-get install -y libgoogle-perftools-dev libprotobuf-dev libboost-all-dev
+        # Added libunwind-dev to satisfy libgoogle-perftools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libunwind-dev libgoogle-perftools-dev libprotobuf-dev libboost-all-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
