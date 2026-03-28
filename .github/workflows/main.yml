@@ -1,40 +1,44 @@
 name: Generate Architecture Report
 
-# Trigger the action automatically when you push to the main branch
 on:
   push:
     branches: [ main ]
-
-# You can also add a button to trigger it manually
   workflow_dispatch: 
 
 jobs:
   build-and-report:
-    runs-on: ubuntu-latest # Spins up a fresh Linux server
+    runs-on: ubuntu-22.04 # perfectly matches your WSL environment
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          lfs: true # Ensures it downloads your large gem5 binary properly
+          lfs: true
+
+      - name: Install gem5 Hardware Dependencies
+        # This installs the C++ libraries gem5 needs to boot up
+        run: sudo apt-get update && sudo apt-get install -y libgoogle-perftools-dev libprotobuf-dev libboost-all-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.10'
 
-      - name: Install Python Dependencies
+      - name: Install Python Script Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install python-pptx matplotlib
 
-      - name: Make gem5 executable
-        run: chmod +x build/X86/gem5.opt
+      - name: Grant Execute Permissions
+        # Ensure gem5 and the C benchmarks are allowed to run
+        run: |
+          chmod +x build/X86/gem5.opt
+          chmod +x s4_project_tests/branch_test_random
+          chmod +x s4_project_tests/branch_test_pattern
 
       - name: Run Master Pipeline
         run: python3 generate_presentation.py
 
-      # This is the magic step that lets you download the file!
       - name: Upload PPTX Artifact
         uses: actions/upload-artifact@v4
         with:
