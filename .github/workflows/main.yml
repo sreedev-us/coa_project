@@ -18,7 +18,16 @@ jobs:
       - name: Install gem5 Hardware Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libunwind-dev libgoogle-perftools-dev libprotobuf-dev libboost-all-dev python3-dev libpng-dev
+          sudo apt-get install -y \
+            libunwind-dev \
+            libgoogle-perftools-dev \
+            libprotobuf-dev \
+            libboost-all-dev \
+            python3-dev \
+            libpng-dev \
+            zlib1g-dev \
+            m4 \
+            libhdf5-dev
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,6 +45,9 @@ jobs:
           chmod +x build/X86/gem5.opt
           chmod +x s4_project_tests/branch_test_random
           chmod +x s4_project_tests/branch_test_pattern
+
+      - name: Debug Library Dependencies
+        run: ldd build/X86/gem5.opt
 
       - name: Run Master Pipeline
         run: python3 generate_presentation.py
