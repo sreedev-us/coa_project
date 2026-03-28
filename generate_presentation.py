@@ -104,8 +104,8 @@ for member in team:
 
 
 p_sub = tf_team.add_paragraph()
-p_sub.text = "\nSubmitted to: Ms. Gayathri"
-p_sub.font.size = Pt(22)
+p_sub.text = "\n\nSubmitted to: Ms. Gayathri"
+p_sub.font.size = Pt(25)
 p_sub.font.italic = True
 p_sub.font.bold = True
 
