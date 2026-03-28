@@ -83,16 +83,42 @@ title = slide_title.shapes.title
 subtitle = slide_title.placeholders[1]
 
 title.text = "Control Hazard Analysis & Hardware Branch Prediction"
-subtitle.text = (
-    "Providence College of Engineering | KTU S4 COA\n\n"
-    "Team Members:\n"
-    "Agnivesh P A (PRC24CA010)\n"
-    "Bibin C Mathew (PRC24CA028)\n"
-    "Joyal Philip John (PRC24CA037)\n"
-    "Melvin Mathew (PRC24CA041)\n"
-    "Sreedev U.S. (PRC24CA053)\n\n"
-    "Submitted to: Ms. Gayathri"
-)
+
+# Take manual control of the subtitle text frame
+tf = subtitle.text_frame
+tf.clear() # Clears the default messy string formatting
+
+# 1. College & Course Header
+p_header = tf.paragraphs[0]
+p_header.text = "Providence College of Engineering | KTU S4 COA"
+p_header.font.size = Pt(22)
+p_header.font.bold = True
+p_header.space_after = Pt(25) # Adds a clean gap before the team members
+
+# 2. Team Members Section
+p_team_title = tf.add_paragraph()
+p_team_title.text = "Team Members:"
+p_team_title.font.size = Pt(18)
+p_team_title.font.bold = True
+
+team = [
+    "Agnivesh P A (PRC24CA010)", 
+    "Bibin C Mathew (PRC24CA028)", 
+    "Joyal Philip John (PRC24CA037)", 
+    "Melvin Mathew (PRC24CA041)", 
+    "Sreedev U.S. (PRC24CA053)"
+]
+
+for member in team:
+    p_mem = tf.add_paragraph()
+    p_mem.text = member
+    p_mem.font.size = Pt(16)
+
+# 3. Faculty Submission Section
+p_sub = tf.add_paragraph()
+p_sub.text = "\nSubmitted to: Ms. Gayathri"
+p_sub.font.size = Pt(18)
+p_sub.font.italic = True
 
 # --- Slide 2: Methodology ---
 slide_intro = prs.slides.add_slide(prs.slide_layouts[1])
