@@ -22,7 +22,6 @@ for wl_name, wl_path in workloads.items():
     for pred in predictors:
         print(f"▶️ Simulating {pred}...")
         
-        # Pass BOTH the predictor and the workload path to gem5
         command = ["build/X86/gem5.opt", "s4_project_tests/run_project.py", pred, wl_path]
         subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
@@ -78,30 +77,47 @@ def add_bullet(text_frame, text, font_size=22, bold=False):
     p.space_after = Pt(10) # Adds clean spacing between lines
     return p
 
-# Slide 1: Theory
-slide_intro = prs.slides.add_slide(prs.slide_layouts[1])
-slide_intro.shapes.title.text = "Control Hazards & Branch Prediction"
-tf_intro = slide_intro.shapes.placeholders[1].text_frame
-tf_intro.text = "We tested 4 hardware architectures against 2 workloads:"
-add_bullet(tf_intro, "1. Random Workload: Unpredictable branches (rand() % 100 < 50).", 24)
-add_bullet(tf_intro, "2. Patterned Workload: A predictable loop (i % 4 != 0).", 24)
-add_bullet(tf_intro, "Goal: Observe how advanced hardware 'learns' software patterns to avoid pipeline flushes.", 24, True)
+# --- Slide 1: Official Title Page ---
+slide_title = prs.slides.add_slide(prs.slide_layouts[0])
+title = slide_title.shapes.title
+subtitle = slide_title.placeholders[1]
 
-# Slide 2: Random Workload Data (Aligned)
+title.text = "Control Hazard Analysis & Hardware Branch Prediction"
+subtitle.text = (
+    "Providence College of Engineering | KTU S4 COA\n\n"
+    "Team Members:\n"
+    "Agnivesh P A (PRC24CA010)\n"
+    "Bibin C Mathew (PRC24CA028)\n"
+    "Joyal Philip John (PRC24CA037)\n"
+    "Melvin Mathew (PRC24CA041)\n"
+    "Sreedev U.S. (PRC24CA053)\n\n"
+    "Submitted to: Ms. Gayathri"
+)
+
+# --- Slide 2: Methodology ---
+slide_intro = prs.slides.add_slide(prs.slide_layouts[1])
+slide_intro.shapes.title.text = "Methodology & Workloads"
+tf_intro = slide_intro.shapes.placeholders[1].text_frame
+tf_intro.text = "We utilized the gem5 O3 architectural simulator to test 4 hardware predictors:"
+
+add_bullet(tf_intro, "1. Random Workload: Unpredictable branches (rand() % 100 < 50) to establish a baseline.", 20)
+add_bullet(tf_intro, "2. Patterned Workload: A predictable mathematical loop (i % 4 != 0).", 20)
+add_bullet(tf_intro, "Goal: Observe how advanced hardware 'learns' software patterns to avoid pipeline flushes.", 22, True)
+
+# --- Slide 3: Random Workload Data ---
 slide_rand = prs.slides.add_slide(prs.slide_layouts[1])
 slide_rand.shapes.title.text = "Phase 1: Random Workload Execution"
 tf_rand = slide_rand.shapes.placeholders[1].text_frame
 tf_rand.text = "Hypothesis: Predictors cannot find a pattern in random data. Mispredictions will be universally high."
 for pred in predictors:
-    # This bullet format forces perfect vertical alignment
     add_bullet(tf_rand, f"• {pred}: {results['Random'][pred]['incorrect']:,} Mispredictions | {results['Random'][pred]['squashes']:,} Flushes", 22)
 
-# Slide 3: Random Workload Graph
+# --- Slide 4: Random Workload Graph ---
 slide_rg = prs.slides.add_slide(prs.slide_layouts[5])
 slide_rg.shapes.title.text = "Visualizing the Random Workload"
 slide_rg.shapes.add_picture("s4_project_tests/graph_random.png", Inches(1), Inches(1.5), width=Inches(8))
 
-# Slide 4: Patterned Workload Data (Aligned)
+# --- Slide 5: Patterned Workload Data ---
 slide_pat = prs.slides.add_slide(prs.slide_layouts[1])
 slide_pat.shapes.title.text = "Phase 2: Patterned Workload Execution"
 tf_pat = slide_pat.shapes.placeholders[1].text_frame
@@ -109,28 +125,26 @@ tf_pat.text = "Hypothesis: Advanced predictors will 'learn' the repeating mathem
 for pred in predictors:
     add_bullet(tf_pat, f"• {pred}: {results['Patterned'][pred]['incorrect']:,} Mispredictions | {results['Patterned'][pred]['squashes']:,} Flushes", 22)
 
-# Slide 5: Patterned Workload Graph
+# --- Slide 6: Patterned Workload Graph ---
 slide_pg = prs.slides.add_slide(prs.slide_layouts[5])
 slide_pg.shapes.title.text = "Visualizing the Patterned Workload"
 slide_pg.shapes.add_picture("s4_project_tests/graph_patterned.png", Inches(1), Inches(1.5), width=Inches(8))
 
-# Slide 6: Time Saved (Raw Data)
+# --- Slide 7: Time Saved (Raw Data) ---
 slide_time = prs.slides.add_slide(prs.slide_layouts[1])
 slide_time.shapes.title.text = "Measuring Performance: CPU Clock Cycles"
 tf_time = slide_time.shapes.placeholders[1].text_frame
 tf_time.text = "Total simulated execution time (Ticks) for the Patterned Workload:"
 
-# Increased the font size slightly since it's the main focus of this slide
 for pred in predictors:
     add_bullet(tf_time, f"• {pred}: {results['Patterned'][pred]['ticks']:,} Ticks", 28)
 
-# Calculate the savings for the next slide
 worst_ticks = max(results['Patterned'][p]['ticks'] for p in predictors)
 best_ticks = min(results['Patterned'][p]['ticks'] for p in predictors)
 saved_ticks = worst_ticks - best_ticks
 percent_saved = (saved_ticks / worst_ticks) * 100
 
-# Slide 7: The Real-World Impact (Brand New Slide)
+# --- Slide 8: The Real-World Impact ---
 slide_impact = prs.slides.add_slide(prs.slide_layouts[1])
 slide_impact.shapes.title.text = "The Real-World Impact"
 tf_impact = slide_impact.shapes.placeholders[1].text_frame
@@ -140,7 +154,7 @@ add_bullet(tf_impact, f"By minimizing pipeline bubbles, the optimal predictor sa
 add_bullet(tf_impact, f"This represents a {percent_saved:.2f}% reduction in total execution time.", 24, True)
 add_bullet(tf_impact, "In massive data centers or high-performance environments, a ~3.5% speedup across billions of instructions saves significant processing time and power, simply by choosing the correct hardware architecture!", 22)
 
-# Slide 8: AI/Perceptron Explanation (Formerly Slide 7)
+# --- Slide 9: AI/Perceptron Explanation ---
 slide_ml = prs.slides.add_slide(prs.slide_layouts[1])
 slide_ml.shapes.title.text = "The AI Paradox: Why the Perceptron Failed"
 tf_ml = slide_ml.shapes.placeholders[1].text_frame
@@ -153,4 +167,4 @@ add_bullet(tf_ml, "Conclusion: Throwing AI hardware at simple code is highly ine
 # 5. Save the file
 ppt_path = "s4_project_tests/KTU_S4_Project_Report.pptx"
 prs.save(ppt_path)
-print(f"🎉 Success! 8-Slide formatted presentation saved to {ppt_path}")
+print(f"🎉 Success! 9-Slide formatted presentation saved to {ppt_path}")
