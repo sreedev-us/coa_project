@@ -1,0 +1,42 @@
+name: Generate Architecture Report
+
+# Trigger the action automatically when you push to the main branch
+on:
+  push:
+    branches: [ main ]
+
+# You can also add a button to trigger it manually
+  workflow_dispatch: 
+
+jobs:
+  build-and-report:
+    runs-on: ubuntu-latest # Spins up a fresh Linux server
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true # Ensures it downloads your large gem5 binary properly
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-pptx matplotlib
+
+      - name: Make gem5 executable
+        run: chmod +x build/X86/gem5.opt
+
+      - name: Run Master Pipeline
+        run: python3 generate_presentation.py
+
+      # This is the magic step that lets you download the file!
+      - name: Upload PPTX Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KTU_S4_Project_Report
+          path: s4_project_tests/KTU_S4_Project_Report.pptx
